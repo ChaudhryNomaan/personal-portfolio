@@ -11,13 +11,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // We use 'as any' here to bypass the temporary TypeScript limitation 
-    // while still passing the root instruction to the Turbopack engine.
+  // We only apply experimental settings if we are in development mode
+  // This prevents the "Unrecognized key" warning during Vercel builds
+  experimental: process.env.NODE_ENV === 'development' ? {
     turbopack: {
       root: ".",
     },
-  } as any, 
+  } as any : {},
 };
 
 export default nextConfig;
