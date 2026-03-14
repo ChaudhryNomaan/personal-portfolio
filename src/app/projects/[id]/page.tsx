@@ -142,7 +142,8 @@ export default function ProjectDetail() {
               </span>
             </div>
             
-            <h1 className="text-5xl md:text-[8vw] font-light tracking-tighter leading-[0.9] uppercase break-words">
+            {/* REDUCED TITLE SIZE: From 8vw to 4xl/6xl */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-tighter leading-[1.1] uppercase break-words max-w-4xl">
               {project.title.split(' ').map((word: string, i: number) => (
                 <span key={i} className={i % 2 !== 0 ? "italic font-serif text-white/70" : ""}>
                   {word}{" "}
@@ -162,8 +163,8 @@ export default function ProjectDetail() {
               <span className="text-[9px] uppercase tracking-[0.5em] font-bold">Project Concept</span>
             </div>
             
-            {/* UPDATED DESCRIPTION STYLING */}
-            <p className="text-2xl md:text-4xl text-gray-200 font-light leading-relaxed italic font-serif whitespace-pre-wrap break-words">
+            {/* REDUCED DESCRIPTION SIZE: From 4xl to xl/2xl */}
+            <p className="text-xl md:text-2xl lg:text-3xl text-gray-200 font-light leading-relaxed whitespace-pre-wrap break-words max-w-3xl">
               {project.description}
             </p>
           </div>
