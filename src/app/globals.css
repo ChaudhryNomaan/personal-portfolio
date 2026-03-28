@@ -22,12 +22,16 @@
   --background: #0a0a0a;
   --foreground: #ffffff;
   --accent: #f59e0b; /* Amber 500 */
+  /* FIX: Viewport height variable for mobile toolbars */
+  --vh: 1vh;
 }
 
-/* Global resets for a smoother feel */
+/* Global resets */
 html {
   scroll-behavior: smooth;
-  cursor: crosshair; /* Adds that "Gallery" feel */
+  cursor: crosshair;
+  /* FIX: Ensure html doesn't trap the height calculation */
+  height: -webkit-fill-available;
 }
 
 body {
@@ -36,7 +40,20 @@ body {
   font-family: var(--font-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* FIX: Standardize height for mobile browsers */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  
+  /* Keep your overflow-x hidden but ensure it's on the body, not html */
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* FIX: Ensure Next.js Image fill works correctly */
+img {
+  max-width: none;
 }
 
 /* Custom Text Selection */

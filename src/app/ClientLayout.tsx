@@ -63,20 +63,28 @@ export default function ClientLayout({
 
       {!isAdmin && (
         <>
-          {/* Global Aesthetic Overlays */}
-          <div className="fixed inset-0 pointer-events-none z-[9999]">
+          {/* Global Aesthetic Overlays - Fixed z-index to stay behind content */}
+          <div className="fixed inset-0 pointer-events-none z-0">
             <div className="absolute inset-0 bg-grain opacity-[0.03] mix-blend-overlay" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,10,10,0.2)_100%)]" />
           </div>
-          {/* Structural Frame */}
-          <div className="fixed hidden md:block inset-6 border border-white/5 pointer-events-none z-[50]" />
+          
+          {/* Structural Frame - STRICTLY desktop only with display: none for mobile */}
+          <div className="fixed inset-0 pointer-events-none z-[50] hidden md:flex items-center justify-center p-6">
+             <div className="w-full h-full border border-white/5" />
+          </div>
         </>
       )}
 
-      <div className="relative z-10 flex flex-col min-h-screen">
+      {/* 
+          IMPORTANT: Removed 'relative' from the outer div to prevent 
+          it from creating a new stacking context that might clip children.
+      */}
+      <div className="flex flex-col min-h-screen">
         {!isAdmin && <Navbar settings={settings} />}
         
-        <main className="flex-grow">
+        {/* Added w-full to ensure main is never squeezed */}
+        <main className="flex-grow w-full overflow-x-hidden">
           {children}
         </main>
 

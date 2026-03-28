@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className="scroll-smooth">
       <body 
-        className={`${montserrat.variable} ${playfair.variable} font-sans bg-[#0a0a0a] text-[#fafafa] antialiased selection:bg-amber-500/30 selection:text-amber-200 lg:cursor-none`}
+        className={`${montserrat.variable} ${playfair.variable} font-sans bg-[#0a0a0a] text-[#fafafa] antialiased selection:bg-amber-500/30 selection:text-amber-200 cursor-default lg:cursor-none`}
       >
         <ClientLayout settings={settings}>
           {children}
