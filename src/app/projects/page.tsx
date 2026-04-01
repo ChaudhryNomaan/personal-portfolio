@@ -33,7 +33,7 @@ export default function ProjectsPage() {
         const projectsWithUrls = data.map((proj) => {
           let finalImageUrl = proj.cover_image;
 
-          // FIX: Only generate a Public URL if it's a path, not a full URL
+          // If cover_image exists but isn't a full URL, resolve it
           if (proj.cover_image && !proj.cover_image.startsWith('http')) {
             const { data: urlData } = supabase.storage
               .from('uploads') 
@@ -42,10 +42,15 @@ export default function ProjectsPage() {
             finalImageUrl = urlData.publicUrl;
           }
 
+          // If cover_image is missing entirely, provide a transparent pixel or local placeholder
+          if (!finalImageUrl) {
+            finalImageUrl = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+          }
+
           return {
             ...proj,
             cover_image: finalImageUrl,
-            title: proj.title || proj.name || "Untitled Project",
+            title: proj.title || "Untitled Project",
             category: proj.category || "Web" 
           };
         });

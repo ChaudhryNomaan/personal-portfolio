@@ -16,6 +16,14 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
+  // Helper to convert storage paths to valid URLs
+  const getImageUrl = (path: string) => {
+    if (!path) return ""; 
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('uploads').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   useEffect(() => {
     const fetchProject = async () => {
       if (!id) return;
@@ -99,14 +107,7 @@ export default function ProjectDetail() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-amber-500/30 overflow-x-hidden">
       
-      {/* THE BULLETPROOF FIX:
-          1. -mt-[120px] pulls the image ABOVE the navbar area.
-          2. min-h-[80svh] ensures it covers the mobile viewport.
-          3. w-screen + -ml-[5vw] (or simply absolute inset-0) breaks out of parent padding.
-      */}
       <section className="relative w-full min-h-[75svh] md:min-h-[90vh] -mt-[120px] overflow-hidden bg-black">
-        
-        {/* Background Image Wrapper */}
         <div className="absolute inset-0 w-full h-full z-0">
           <motion.div 
             initial={{ scale: 1.1, opacity: 0 }}
@@ -114,22 +115,21 @@ export default function ProjectDetail() {
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full h-full"
           >
-            <Image 
-              src={project.cover_image} 
-              alt={project.title}
-              fill
-              // Added object-top so the website header is always visible on vertical screens
-              className="object-cover object-top md:object-center opacity-50 grayscale-[20%]"
-              sizes="100vw"
-              priority
-              quality={100}
-            />
-            {/* Smooth transition to the black content area below */}
+            {project.cover_image && (
+              <Image 
+                src={getImageUrl(project.cover_image)} 
+                alt={project.title}
+                fill
+                className="object-cover object-top md:object-center opacity-50 grayscale-[20%]"
+                sizes="100vw"
+                priority
+                quality={100}
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
           </motion.div>
         </div>
 
-        {/* Hero Content Overlay */}
         <div className="relative z-10 w-full min-h-[75svh] md:min-h-[90vh] max-w-[1400px] mx-auto px-8 flex flex-col pt-[180px] pb-16 justify-between">
           <motion.button 
             initial={{ opacity: 0, x: -10 }}
@@ -163,7 +163,6 @@ export default function ProjectDetail() {
         </div>
       </section>
 
-      {/* PROJECT INFO GRID */}
       <section className="relative z-20 bg-black max-w-[1400px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 py-24">
         <div className="lg:col-span-7 space-y-12">
           <div className="space-y-6">
@@ -209,7 +208,6 @@ export default function ProjectDetail() {
         </aside>
       </section>
 
-      {/* GALLERY GRID */}
       {project.gallery && project.gallery.length > 0 && (
         <section className="max-w-[1400px] mx-auto px-8 pb-40">
           <div className="flex items-center gap-6 mb-16">
@@ -230,7 +228,7 @@ export default function ProjectDetail() {
                 }`}
               >
                 <Image 
-                  src={img} 
+                  src={getImageUrl(img)} 
                   alt={`Project image ${i}`}
                   fill
                   className="object-cover transition-transform duration-[2s] group-hover:scale-105"
@@ -245,7 +243,6 @@ export default function ProjectDetail() {
         </section>
       )}
 
-      {/* LIGHTBOX OVERLAY */}
       <AnimatePresence>
         {activeImageIndex !== null && project.gallery && (
           <motion.div 
@@ -278,7 +275,7 @@ export default function ProjectDetail() {
               >
                 <div className="relative w-full h-full max-h-full md:max-h-[85vh] z-0 overflow-hidden rounded-[1rem] md:rounded-[2rem] border border-white/10 shadow-2xl">
                   <Image 
-                    src={project.gallery[activeImageIndex]} 
+                    src={getImageUrl(project.gallery[activeImageIndex])} 
                     alt="Gallery preview"
                     fill
                     className="object-contain"
