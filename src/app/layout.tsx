@@ -1,8 +1,7 @@
 import { Montserrat, Playfair_Display } from 'next/font/google';
 import { supabase } from '@/lib/supabase';
 import ClientLayout from './ClientLayout';
-import './globals.css';
-
+import '@/app/globals.css';
 const montserrat = Montserrat({ 
   subsets: ['latin'], 
   variable: '--font-montserrat',
@@ -36,7 +35,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className="scroll-smooth">
       <body 
-        className={`${montserrat.variable} ${playfair.variable} font-sans bg-[#0a0a0a] text-[#fafafa] antialiased selection:bg-amber-500/30 selection:text-amber-200 cursor-default lg:cursor-none`}
+        className={`
+          ${montserrat.variable} 
+          ${playfair.variable} 
+          font-sans 
+          /* Primary Ink (#F8FAFC) - High contrast typography */
+          text-[#F8FAFC] 
+          antialiased 
+          /* The Signal (#38BDF8) - Primary tech accent for selection */
+          selection:bg-[#38BDF8] 
+          selection:text-[#1E293B] 
+          cursor-default 
+          lg:cursor-none
+        `}
       >
         <ClientLayout settings={settings}>
           {children}

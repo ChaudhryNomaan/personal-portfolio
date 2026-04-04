@@ -19,9 +19,12 @@
 }
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --accent: #f59e0b; /* Amber 500 */
+  /* UPDATED: Concrete & Cobalt Palette */
+  --background: #334155;    /* Primary Canvas */
+  --surface: #1E293B;       /* Deep Slate Surface */
+  --foreground: #F8FAFC;    /* Clean Slate Ink */
+  --accent: #38BDF8;       /* Signal Cyan */
+  
   /* FIX: Viewport height variable for mobile toolbars */
   --vh: 1vh;
 }
@@ -59,15 +62,15 @@ img {
 /* Custom Text Selection */
 ::selection {
   background-color: var(--accent);
-  color: #000;
+  color: var(--surface);
 }
 
 /* Luxury Glassmorphism Utility */
 @utility glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(30, 41, 59, 0.6); /* Adjusted to match surface color */
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(248, 250, 252, 0.08);
 }
 
 /* High-End Grain Overlay */

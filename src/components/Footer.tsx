@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Instagram, Linkedin, Mail, ArrowUp, Twitter } from 'lucide-react';
+import { Github, Instagram, Linkedin, Mail, ArrowUp, Twitter, Terminal } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 
-// Added interface to satisfy TypeScript and fix the ClientLayout build error
 interface FooterProps {
   settings?: any;
 }
@@ -14,10 +13,8 @@ interface FooterProps {
 const Footer = ({ settings }: FooterProps) => {
   const [data, setData] = useState<any>(null);
 
-  // 1. Fetch live data from Supabase (Fallback logic)
   useEffect(() => {
     const fetchFooterData = async () => {
-      // If footer_json is already in the passed settings, use it to avoid extra fetch
       if (settings?.footer_json) {
         setData(settings.footer_json);
         return;
@@ -36,7 +33,6 @@ const Footer = ({ settings }: FooterProps) => {
     fetchFooterData();
   }, [settings]);
 
-  // 2. Map data to variables (Prioritizing passed settings for speed)
   const footerSource = data || settings?.footer_json;
   
   const studioName = footerSource?.copyright || "LIZA STUDIO";
@@ -45,43 +41,48 @@ const Footer = ({ settings }: FooterProps) => {
   const narrative = footerSource?.narrative || "Available for select commissions 2026 —>";
   const availability = footerSource?.availability || "Status: Active";
   const socials = footerSource?.socials || {};
-  const accentColor = settings?.accentColor || "#f59e0b";
+  
+  /* Fallback to Signal Cyan (#38BDF8) */
+  const accentColor = settings?.accentColor || "#38BDF8";
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const socialLinks = [
-    { icon: <Github size={18} />, href: socials.github, id: 'github' },
-    { icon: <Linkedin size={18} />, href: socials.linkedin, id: 'linkedin' },
-    { icon: <Instagram size={18} />, href: socials.instagram, id: 'instagram' },
-    { icon: <Twitter size={18} />, href: socials.twitter, id: 'twitter' },
-    { icon: <Mail size={18} />, href: email ? `mailto:${email}` : null, id: 'email' }
+    { icon: <Github size={16} />, href: socials.github, id: 'github' },
+    { icon: <Linkedin size={16} />, href: socials.linkedin, id: 'linkedin' },
+    { icon: <Instagram size={16} />, href: socials.instagram, id: 'instagram' },
+    { icon: <Twitter size={16} />, href: socials.twitter, id: 'twitter' },
+    { icon: <Mail size={16} />, href: email ? `mailto:${email}` : null, id: 'email' }
   ].filter(link => link.href);
 
   return (
-    <footer className="relative z-30 pt-32 pb-10 px-8 md:px-16 bg-[#0a0a0a] overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-12">
+    <footer className="relative z-30 pt-40 pb-12 px-8 md:px-16 bg-[#334155] border-t border-white/5 overflow-hidden font-sans">
+      {/* Structural Grid Overlay - Match Global CSS */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-32 gap-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="max-w-md"
+            className="max-w-xl"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-6 h-[1px]" style={{ backgroundColor: `${accentColor}80` }} />
-              <span className="text-[9px] uppercase tracking-[0.6em] font-bold italic" style={{ color: accentColor }}>
-                Project Inquiry
+            <div className="flex items-center gap-3 mb-8">
+              <Terminal size={14} style={{ color: accentColor }} />
+              <span className="text-[10px] font-mono uppercase tracking-[0.6em] font-bold" style={{ color: accentColor }}>
+                TERMINAL_LINK // 04
               </span>
             </div>
             
             <Link href="/inquiry" className="group block cursor-pointer">
-              <h2 className="text-5xl md:text-7xl font-light tracking-tighter text-white uppercase leading-[0.9] mb-8 transition-colors">
-                Let&apos;s <span className="italic font-serif lowercase group-hover:text-white" style={{ color: `${accentColor}E6` }}>create</span>
+              <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-[#F8FAFC] uppercase leading-[0.8] mb-10 transition-transform group-hover:-translate-y-1">
+                Let&apos;s <span className="italic font-serif lowercase" style={{ color: accentColor }}>architect</span>
               </h2>
-              <p className="text-neutral-500 text-[10px] tracking-[0.3em] uppercase font-light group-hover:text-neutral-300 transition-colors max-w-xs leading-relaxed">
+              <p className="text-[#94A3B8] text-[10px] font-mono tracking-[0.3em] uppercase group-hover:text-[#F8FAFC] transition-colors max-w-sm leading-relaxed border-l border-white/10 pl-6">
                 {narrative}
               </p>
             </Link>
@@ -90,55 +91,62 @@ const Footer = ({ settings }: FooterProps) => {
           <div className="flex flex-col items-end gap-6">
             <button 
               onClick={scrollToTop}
-              className="group flex flex-col items-center gap-4 text-neutral-600 hover:text-white transition-colors text-[8px] uppercase tracking-[0.5em] font-bold"
+              className="group flex flex-col items-center gap-4 text-[#94A3B8] hover:text-[#F8FAFC] transition-colors text-[9px] font-mono uppercase tracking-[0.5em] font-bold"
             >
-              <span className="mb-2 tracking-[0.8em] mr-[-0.8em]">Top</span>
+              <span className="mb-2 tracking-[0.8em] mr-[-0.8em]">RETURN_TO_TOP</span>
               <div 
-                className="w-12 h-20 rounded-full border border-white/5 flex items-center justify-center group-hover:bg-white/[0.01] transition-all relative overflow-hidden"
-                style={{ borderColor: 'rgba(255,255,255,0.05)' }}
+                className="w-14 h-24 bg-[#1E293B] border border-white/10 flex items-center justify-center group-hover:border-[#38BDF8]/50 transition-all relative"
               >
                 <motion.div 
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
                 >
-                  <ArrowUp size={16} className="transition-colors group-hover:text-amber-500" />
+                  <ArrowUp size={20} style={{ color: accentColor }} />
                 </motion.div>
+                {/* Technical Corner Accents */}
+                <div className="absolute top-0 left-0 w-1 h-1 bg-[#38BDF8]/20" />
+                <div className="absolute bottom-0 right-0 w-1 h-1 bg-[#38BDF8]/20" />
               </div>
             </button>
           </div>
         </div>
 
-        <div className="pt-12 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
-          <div className="text-neutral-600 text-[9px] tracking-[0.4em] uppercase font-medium order-2 md:order-1 text-center md:text-left">
-            <span className="text-neutral-400">© {new Date().getFullYear()} {studioName}</span>
-            <span className="mx-4 opacity-20">/</span> 
+        <div className="pt-16 border-t border-white/5 grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
+          {/* Identity & Geo */}
+          <div className="text-[#94A3B8] text-[10px] font-mono tracking-[0.4em] uppercase order-2 md:order-1 text-center md:text-left">
+            <span className="text-[#F8FAFC]">© {new Date().getFullYear()} {studioName}</span>
+            <span className="mx-4 opacity-10">/</span> 
             {location}
           </div>
 
-          <div className="flex justify-center gap-10 order-1 md:order-2">
+          {/* Comms Nodes */}
+          <div className="flex justify-center gap-12 order-1 md:order-2">
             {socialLinks.map((social) => (
               <Link 
                 key={social.id}
                 href={social.href}
                 target="_blank"
-                className="text-neutral-700 transition-all duration-500 hover:-translate-y-1.5"
+                className="text-[#94A3B8] transition-all duration-300 hover:-translate-y-1 hover:text-[#38BDF8]"
+                style={{ color: '#94A3B8' }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = accentColor)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = '')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#94A3B8')}
               >
                 {social.icon}
               </Link>
             ))}
           </div>
 
-          <div className="text-neutral-700 text-[8px] tracking-[0.5em] uppercase font-mono text-center md:text-right order-3">
-            {availability} <span className="text-neutral-500 mx-2">//</span> v1.0.4
+          {/* System Status */}
+          <div className="text-[#94A3B8] text-[9px] tracking-[0.5em] font-mono uppercase text-center md:text-right order-3">
+            <span style={{ color: accentColor }}>[</span> {availability} <span style={{ color: accentColor }}>]</span> <span className="mx-2 opacity-10">//</span> OS.V.4.0
           </div>
         </div>
       </div>
 
+      {/* Background Signal Glow */}
       <div 
-        className="absolute -bottom-20 -right-20 w-[40vw] h-[40vw] blur-[150px] rounded-full pointer-events-none" 
-        style={{ backgroundColor: `${accentColor}05` }} 
+        className="absolute -bottom-40 -right-20 w-[50vw] h-[50vw] blur-[200px] pointer-events-none opacity-[0.03]" 
+        style={{ backgroundColor: accentColor }} 
       />
     </footer>
   );

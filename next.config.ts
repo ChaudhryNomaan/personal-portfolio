@@ -11,13 +11,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // We only apply experimental settings if we are in development mode
-  // This prevents the "Unrecognized key" warning during Vercel builds
-  experimental: process.env.NODE_ENV === 'development' ? {
-    turbopack: {
-      root: ".",
-    },
-  } as any : {},
+  // Removed the experimental turbopack block to clear terminal warnings
+  experimental: {},
 };
 
 export default nextConfig;

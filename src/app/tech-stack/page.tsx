@@ -1,39 +1,56 @@
 import { supabase } from '@/lib/supabase';
 import ArsenalUI from '../../components/ArsenalUI'; 
 
-export const revalidate = 0; // Ensures instant updates
+export const revalidate = 0; // Ensures instant updates for the technical stack
 
 async function getTechData() {
   try {
-    const { data, error } = await supabase
-      .from('site_config')
-      .select('content')
-      .eq('id', 'about_page_content')
-      .single();
+    // We fetch both the page content and the brand identity for global style syncing
+    const [pageRes, brandRes] = await Promise.all([
+      supabase.from('site_config').select('content').eq('id', 'about_page_content').single(),
+      supabase.from('site_config').select('content').eq('id', 'brand_identity').maybeSingle()
+    ]);
 
-    // If the row doesn't exist yet or there's an error, use defaults
-    if (error || !data?.content) {
-      return {
-        accentColor: "#f59e0b",
-        capabilities: ["Next.js", "Motion Design", "Architectural UI/UX", "TypeScript", "Tailwind CSS"]
-      };
-    }
+    const pageContent = pageRes.data?.content || {};
+    const brandContent = brandRes.data?.content || {};
 
-    // Return merged data: database values first, fallback to defaults if keys are missing
+    // Define the "Signal Cyan" as the engineering fallback
+    const fallbackAccent = "#38BDF8"; 
+    
+    // Default stack reflecting the Concrete & Cobalt technical core
+    const defaultCapabilities = [
+      "Next.js 14", 
+      "TypeScript", 
+      "Supabase Engineering", 
+      "Framer Motion", 
+      "Tailwind CSS",
+      "Full-Stack Architecture"
+    ];
+
     return {
-      accentColor: data.content.accentColor || "#f59e0b",
-      capabilities: data.content.capabilities || []
+      accentColor: pageContent.accentColor || brandContent.accentColor || fallbackAccent,
+      capabilities: pageContent.capabilities && pageContent.capabilities.length > 0 
+        ? pageContent.capabilities 
+        : defaultCapabilities
     };
+
   } catch (error) {
-    console.error("Sync Error:", error);
+    console.error("SYSTEM_SYNC_ERROR // Critical failure in tech data retrieval:", error);
+    
     return {
-      accentColor: "#f59e0b",
-      capabilities: ["Error Loading Stack", "Database Sync Required"]
+      accentColor: "#38BDF8",
+      capabilities: ["SYSTEM_SYNC_REQUIRED", "CHECK_SUPABASE_CONNECTION"]
     };
   }
 }
 
 export default async function Page() {
   const data = await getTechData();
-  return <ArsenalUI data={data} />;
+  
+  return (
+    /* The ArsenalUI component should handle the transition from 
+       the primary canvas (#334155) to the deep surface (#1E293B).
+    */
+    <ArsenalUI data={data} />
+  );
 }

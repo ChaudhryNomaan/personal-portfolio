@@ -7,8 +7,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 function CustomCursor({ accentColor }: { accentColor: string }) {
-  const mouseX = useSpring(0, { damping: 25, stiffness: 250 });
-  const mouseY = useSpring(0, { damping: 25, stiffness: 250 });
+  const mouseX = useSpring(0, { damping: 30, stiffness: 250 });
+  const mouseY = useSpring(0, { damping: 30, stiffness: 250 });
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ function CustomCursor({ accentColor }: { accentColor: string }) {
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      setIsHovering(!!target.closest('a, button, [role="button"], .group'));
+      setIsHovering(!!target.closest('a, button, [role="button"], .group, .card-surface'));
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -32,16 +32,20 @@ function CustomCursor({ accentColor }: { accentColor: string }) {
 
   return (
     <motion.div 
-      className="fixed top-0 left-0 w-4 h-4 rounded-full z-[9999] pointer-events-none mix-blend-difference hidden lg:block"
+      className="fixed top-0 left-0 w-2 h-2 rounded-full z-[9999] pointer-events-none hidden lg:block"
       style={{ 
         x: mouseX, 
         y: mouseY, 
         translateX: "-50%", 
         translateY: "-50%",
-        backgroundColor: accentColor
+        backgroundColor: accentColor,
+        boxShadow: isHovering ? `0 0 20px ${accentColor}` : 'none'
       }}
-      animate={{ scale: isHovering ? 3.5 : 1 }}
-      transition={{ type: "spring", stiffness: 250, damping: 20 }}
+      animate={{ 
+        scale: isHovering ? 4 : 1,
+        opacity: isHovering ? 0.6 : 1 
+      }}
+      transition={{ type: "spring", stiffness: 250, damping: 25 }}
     />
   );
 }
@@ -55,7 +59,9 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
-  const accentColor = settings?.accentColor || "#f59e0b";
+  
+  /* Synced to Signal Cyan (#38BDF8) */
+  const accentColor = settings?.accentColor || "#38BDF8";
 
   return (
     <>
@@ -63,27 +69,25 @@ export default function ClientLayout({
 
       {!isAdmin && (
         <>
-          {/* Global Aesthetic Overlays - Fixed z-index to stay behind content */}
-          <div className="fixed inset-0 pointer-events-none z-0">
-            <div className="absolute inset-0 bg-grain opacity-[0.03] mix-blend-overlay" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,10,10,0.2)_100%)]" />
-          </div>
+          {/* GLOBAL AESTHETIC OVERLAYS - COMMENTED SECTION 
+              (Originally contained grain and vignette for digital experience crafting)
+              
+              <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="bg-grain" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_20%,_rgba(30,41,59,0.4)_100%)]" />
+              </div> 
+          */}
           
-          {/* Structural Frame - STRICTLY desktop only with display: none for mobile */}
+          {/* Structural Frame - Deep Slate Engineering Grid */}
           <div className="fixed inset-0 pointer-events-none z-[50] hidden md:flex items-center justify-center p-6">
-             <div className="w-full h-full border border-white/5" />
+             <div className="w-full h-full border border-[#1E293B]/40" />
           </div>
         </>
       )}
 
-      {/* 
-          IMPORTANT: Removed 'relative' from the outer div to prevent 
-          it from creating a new stacking context that might clip children.
-      */}
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-[#334155]">
         {!isAdmin && <Navbar settings={settings} />}
         
-        {/* Added w-full to ensure main is never squeezed */}
         <main className="flex-grow w-full overflow-x-hidden">
           {children}
         </main>
