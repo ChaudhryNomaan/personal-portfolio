@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Cpu, Layers, ExternalLink, X, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { ArrowLeft, Cpu, Layers, ExternalLink, X, ChevronLeft, ChevronRight, Maximize2, Smartphone, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
 
 export default function ProjectDetail() {
@@ -18,6 +18,14 @@ export default function ProjectDetail() {
 
   const getImageUrl = (path: string) => {
     if (!path) return ""; 
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('uploads').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
+  // Helper to get the actual download URL for the APK
+  const getDownloadUrl = (path: string) => {
+    if (!path) return "#";
     if (path.startsWith('http')) return path;
     const { data } = supabase.storage.from('uploads').getPublicUrl(path);
     return data.publicUrl;
@@ -97,7 +105,7 @@ export default function ProjectDetail() {
   return (
     <main className="min-h-screen bg-[#334155] text-[#F8FAFC] selection:bg-[#38BDF8]/30 overflow-x-hidden font-sans">
       
-      {/* HEADER NAVIGATION ONLY */}
+      {/* HEADER NAVIGATION */}
       <div className="max-w-[1400px] mx-auto px-8 pt-32">
         <motion.button 
           initial={{ opacity: 0, x: -10 }}
@@ -137,8 +145,8 @@ export default function ProjectDetail() {
         </div>
 
         <aside className="lg:col-span-5">
-          <div className="p-10 bg-[#1E293B] border border-[#38BDF8]/20 shadow-2xl">
-            <div className="mb-10">
+          <div className="p-10 bg-[#1E293B] border border-[#38BDF8]/20 shadow-2xl space-y-10">
+            <div>
               <div className="flex items-center gap-3 mb-6 text-[#94A3B8]">
                 <Cpu size={14} />
                 <span className="text-[9px] font-mono uppercase tracking-[0.4em]">TECH_SPECIFICATIONS</span>
@@ -152,16 +160,36 @@ export default function ProjectDetail() {
               </div>
             </div>
 
-            {project.live_link && (
-              <a 
-                href={project.live_link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-5 bg-transparent border border-[#38BDF8] text-[#38BDF8] text-[10px] font-mono uppercase tracking-[0.4em] hover:bg-[#38BDF8] hover:text-[#1E293B] transition-all duration-500"
-              >
-                DEPLOY_EXPERIENCE <ExternalLink size={14} />
-              </a>
-            )}
+            <div className="space-y-4">
+               {/* APK DOWNLOAD SECTION FOR MOBILE PROJECTS */}
+               {project.category === "Mobile" && project.apk_url && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-[#F59E0B]">
+                    <Smartphone size={14} />
+                    <span className="text-[9px] font-mono uppercase tracking-[0.4em]">OS_BUILD_READY</span>
+                  </div>
+                  <a 
+                    href={getDownloadUrl(project.apk_url)} 
+                    download
+                    className="flex items-center justify-between p-5 bg-[#F59E0B] text-[#1E293B] text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white transition-all duration-500 shadow-[0_0_20px_rgba(245,158,11,0.2)]"
+                  >
+                    FETCH_APK_BUILD <Download size={14} />
+                  </a>
+                </div>
+              )}
+
+              {/* LIVE LINK / APP STORE LINK */}
+              {project.live_link && (
+                <a 
+                  href={project.live_link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-5 bg-transparent border border-[#38BDF8] text-[#38BDF8] text-[10px] font-mono uppercase tracking-[0.4em] hover:bg-[#38BDF8] hover:text-[#1E293B] transition-all duration-500"
+                >
+                  {project.category === "Mobile" ? "VIEW_ON_STORE" : "DEPLOY_EXPERIENCE"} <ExternalLink size={14} />
+                </a>
+              )}
+            </div>
           </div>
         </aside>
       </section>
