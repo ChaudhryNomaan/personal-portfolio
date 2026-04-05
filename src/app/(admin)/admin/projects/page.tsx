@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase"; 
-import { Edit3, Trash2, Globe, Image as ImageIcon, Star, X, Upload, Plus, AlertTriangle, CheckCircle2, Layers, Smartphone, FileCode, ExternalLink } from "lucide-react";
+import { Edit3, Trash2, Globe, Image as ImageIcon, Star, X, Upload, Plus, AlertTriangle, CheckCircle2, Layers, Smartphone, FileCode, ExternalLink, Hash } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 function GlobalPortal({ children }: { children: React.ReactNode }) {
@@ -56,19 +56,21 @@ export default function ManageProjects() {
 
   const fetchProjects = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: false });
     if (!error && data) setProjects(data);
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
 
-  // Sync category state when editing
   useEffect(() => {
     if (editingProject) {
       setSelectedCategory(editingProject.category || "Web");
       setCoverPreview(null);
-      // Scroll to top of form smoothly when editing starts
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [editingProject]);
@@ -106,6 +108,14 @@ export default function ManageProjects() {
     const formData = new FormData(e.currentTarget);
     
     try {
+      const newRank = parseInt(formData.get('orderIndex') as string) || 0;
+
+      // Execute the SQL function you created to shift other projects
+      const { error: rpcError } = await supabase.rpc('increment_order_indices', { 
+        start_rank: newRank 
+      });
+      if (rpcError) throw rpcError;
+
       const coverFile = formData.get('coverFile') as File;
       let coverPath = editingProject?.cover_image || "";
       if (coverFile && coverFile.size > 0) coverPath = await uploadFile(coverFile);
@@ -122,6 +132,7 @@ export default function ManageProjects() {
         stack: (formData.get('stack') as string).split(',').map(s => s.trim()),
         featured: formData.get('featured') === 'on',
         cover_image: coverPath,
+        order_index: newRank,
         updated_at: new Date().toISOString(),
       };
 
@@ -169,11 +180,12 @@ export default function ManageProjects() {
         </header>
 
         <section className="bg-zinc-900 p-10 rounded-[2.5rem] border border-zinc-800 shadow-2xl mb-12">
-          {/* KEY FIX: Added key={editingProject?.id || 'new'} 
-              This forces React to re-mount the form when you switch projects 
-          */}
           <form key={editingProject?.id || 'new'} ref={formRef} onSubmit={handleSubmit} className="space-y-8">
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-bold text-amber-500 flex items-center gap-2"><Hash size={12}/> Priority Rank</label>
+                <input type="number" name="orderIndex" defaultValue={editingProject?.order_index || 0} className="w-full bg-zinc-950 border-b border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-amber-500 font-mono" />
+              </div>
               <div className="space-y-2">
                 <label className="text-[10px] uppercase font-bold text-zinc-500">Project Title</label>
                 <input name="title" defaultValue={editingProject?.title} className="w-full bg-zinc-950 border-b border-zinc-800 p-4 rounded-xl text-white outline-none focus:border-amber-500" required />
@@ -271,7 +283,7 @@ export default function ManageProjects() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-[8px] uppercase tracking-widest px-2 py-1 bg-amber-500/10 text-amber-500 rounded-md font-bold">{project.category}</span>
-                      <span className="text-[8px] uppercase tracking-widest text-zinc-600 font-mono">{new Date(project.created_at).toLocaleDateString()}</span>
+                      <span className="text-[8px] uppercase tracking-widest text-zinc-600 font-mono">Rank: {project.order_index}</span>
                     </div>
                   </div>
                 </div>

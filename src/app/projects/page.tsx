@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { motion, useScroll, useTransform, AnimatePresence, LayoutGroup } from 'framer-motion';
 import ProjectCard from '@/components/ProjectCard';
 import { supabase } from '@/lib/supabase';
@@ -21,6 +20,7 @@ export default function ProjectsPage() {
       const { data, error } = await supabase
         .from('projects')
         .select('*')
+        .order('order_index', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -75,10 +75,8 @@ export default function ProjectsPage() {
     : projects.filter(p => p.category === activeFilter);
 
   return (
-    /* Removed #000 background to allow Primary Canvas (#334155) to breathe */
     <main ref={containerRef} className="min-h-screen pt-48 pb-60 relative overflow-hidden font-sans">
       
-      {/* Background System Marker: MMXXVI */}
       <motion.div 
         style={{ y: bgYearY, rotate: 90 }}
         className="fixed top-1/2 right-[-12%] origin-center pointer-events-none z-0 hidden lg:block"
@@ -93,7 +91,6 @@ export default function ProjectsPage() {
           <div className="flex flex-col md:flex-row justify-between items-end border-b border-[#94A3B8]/20 pb-10 gap-8">
             <div className="max-w-2xl">
               <div className="flex items-center gap-3 mb-6">
-                {/* The Alert (#F59E0B) for metadata visual */}
                 <motion.div initial={{ width: 0 }} animate={{ width: 30 }} className="h-px bg-[#F59E0B]" />
                 <span className="text-[#F59E0B] uppercase tracking-[0.8em] text-[8px] font-bold block font-mono">Archive_Ref_01</span>
               </div>
