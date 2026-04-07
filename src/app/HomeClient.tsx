@@ -4,10 +4,11 @@ import React, { useEffect } from 'react';
 import { motion, useSpring, LayoutGroup } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { supabase } from '@/lib/supabase'; // Import supabase to resolve URLs
 
 interface Props {
   initialProjects: any[];
-  heroData?: any; // Made optional to prevent runtime crashes
+  heroData?: any; 
 }
 
 export default function HomeClient({ initialProjects, heroData = {} }: Props) {
@@ -23,39 +24,20 @@ export default function HomeClient({ initialProjects, heroData = {} }: Props) {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [gMouseX, gMouseY]);
 
+  // Helper to resolve Supabase paths to public URLs
+  const getImageUrl = (path: string) => {
+    if (!path) return ""; 
+    if (path.startsWith('http')) return path;
+    const { data } = supabase.storage.from('uploads').getPublicUrl(path);
+    return data.publicUrl;
+  };
+
   return (
-    /* Background: Slate Blue-Gray (#334155) */
     <div className="relative z-10 min-h-screen overflow-x-hidden bg-[#334155] selection:bg-[#38BDF8] selection:text-[#1E293B]">
       
-      {/* Precision Grid Overlay */}
       <div className="fixed inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: `radial-gradient(#38BDF8 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
 
-      {/* COMMENTED OUT REPEATED HERO / NARRATIVE SECTION 
-      <section className="py-48 md:py-72 px-6 flex flex-col items-center justify-center relative z-20 text-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.19, 1, 0.22, 1] }}
-          viewport={{ once: true }}
-        >
-          <span className="text-[10px] uppercase tracking-[0.4em] text-[#F59E0B] font-bold mb-8 block">
-            [ SYSTEM_INITIALIZED_2026 ]
-          </span>
-
-          <h1 className="text-5xl md:text-9xl font-bold tracking-tighter leading-[0.9] text-[#F8FAFC] uppercase">
-            {heroData?.mainTitleLine1} <br />
-            <span className="text-[#38BDF8]">{heroData?.mainTitleLine2}</span>
-          </h1>
-
-          <p className="mt-12 text-[#94A3B8] max-w-xl mx-auto font-medium leading-relaxed text-lg font-mono">
-            // {heroData?.subtext}
-          </p>
-        </motion.div>
-      </section>
-      */}
-
-      {/* Projects Section - Added pt-32 to give room since the above section is gone */}
       <section className="px-6 md:px-12 pt-32 pb-60 relative z-20">
         <div className="max-w-[1400px] mx-auto">
           <LayoutGroup>
@@ -73,7 +55,8 @@ export default function HomeClient({ initialProjects, heroData = {} }: Props) {
                     
                     <div className="relative overflow-hidden bg-[#1E293B] border-[0.5px] border-[#94A3B8]/30 transition-all duration-700 group-hover:border-[#38BDF8]">
                       <motion.img 
-                        src={project.cover_image} 
+                        // UPDATED: Now uses the getImageUrl helper
+                        src={getImageUrl(project.cover_image)} 
                         alt={project.title}
                         className="w-full aspect-[16/10] object-cover block transition-all duration-1000 grayscale group-hover:grayscale-0 group-hover:scale-105"
                       />
