@@ -23,7 +23,6 @@ export default function ProjectDetail() {
     return data.publicUrl;
   };
 
-  // Helper to get the actual download URL for the APK
   const getDownloadUrl = (path: string) => {
     if (!path) return "#";
     if (path.startsWith('http')) return path;
@@ -105,7 +104,6 @@ export default function ProjectDetail() {
   return (
     <main className="min-h-screen bg-[#334155] text-[#F8FAFC] selection:bg-[#38BDF8]/30 overflow-x-hidden font-sans">
       
-      {/* HEADER NAVIGATION */}
       <div className="max-w-[1400px] mx-auto px-8 pt-32">
         <motion.button 
           initial={{ opacity: 0, x: -10 }}
@@ -117,7 +115,6 @@ export default function ProjectDetail() {
         </motion.button>
       </div>
 
-      {/* 2. PROJECT SCHEMATICS */}
       <section className="relative z-20 bg-[#334155] max-w-[1400px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 py-24 border-x border-[#94A3B8]/10">
         <div className="lg:col-span-7 space-y-12">
           <div className="space-y-6">
@@ -137,7 +134,8 @@ export default function ProjectDetail() {
               <span className="text-[9px] font-mono uppercase tracking-[0.5em]">SYSTEM_CONCEPT</span>
             </div>
             
-            <p className="text-xl md:text-3xl text-[#F8FAFC] font-light leading-tight whitespace-pre-wrap break-words max-w-3xl uppercase tracking-tighter">
+            {/* UPDATED: Removed 'uppercase' for professional readability */}
+            <p className="text-xl md:text-3xl text-[#F8FAFC] font-light leading-tight whitespace-pre-wrap break-words max-w-3xl tracking-tighter">
               {project.description}
             </p>
           </div>
@@ -161,7 +159,6 @@ export default function ProjectDetail() {
             </div>
 
             <div className="space-y-4">
-               {/* APK DOWNLOAD SECTION FOR MOBILE PROJECTS */}
                {project.category === "Mobile" && project.apk_url && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-[#F59E0B]">
@@ -178,7 +175,6 @@ export default function ProjectDetail() {
                 </div>
               )}
 
-              {/* LIVE LINK / APP STORE LINK */}
               {project.live_link && (
                 <a 
                   href={project.live_link} 
@@ -194,7 +190,6 @@ export default function ProjectDetail() {
         </aside>
       </section>
 
-      {/* 3. VISUAL ARCHIVE */}
       {project.gallery && project.gallery.length > 0 && (
         <section className="max-w-[1400px] mx-auto px-8 pb-40">
           <div className="flex items-center gap-6 mb-16">
@@ -230,7 +225,6 @@ export default function ProjectDetail() {
         </section>
       )}
 
-      {/* 4. SYSTEM LIGHTBOX */}
       <AnimatePresence>
         {activeImageIndex !== null && project.gallery && (
           <motion.div 
@@ -278,7 +272,6 @@ export default function ProjectDetail() {
         )}
       </AnimatePresence>
 
-      {/* 5. SYSTEM FOOTER */}
       <footer className="mt-20 py-32 flex flex-col items-center gap-8 border-t border-[#94A3B8]/10 bg-[#1E293B]">
         <button 
           onClick={() => router.push('/projects')}
